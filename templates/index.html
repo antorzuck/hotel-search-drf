@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@700&display=swap" rel="stylesheet">
+
+    <title>OyoRooms</title>
+    
+    <style>
+    
+    h1,h2,h3,h4,h5{
+      font-family: 'Ubuntu', sans-serif;
+    }
+    
+   body{
+     background-color: #ECF0F1;
+   }
+   
+  .home{
+    background-color: #34495E;
+  }
+      
+    </style>
+  </head>
+  <body>
+    
+    <section class="home">
+     <h2 class="py-5 text-center text-white">Hotel search app in django rest framework!</h2>
+     
+     <div class="container">
+    
+  <form>
+       <input class="form-control" type="text" placeholder="Enter price" id="price"/>
+      <br />
+      
+      <select multiple class="form-control" id="select">
+      
+    </select>
+    <br />
+    
+    <button onclick="btnSubmit()" class="w-100 btn btn-outline-success" type="button">Search</button>
+    
+   </form>
+     <br />
+     <br />
+     </div>
+    </section>
+   
+   
+   
+   
+   <section class="my-5 hotels">
+     
+     
+    <center>
+      <div class="container">
+        
+        
+        
+        <div class="row" id="allhotel">
+          
+        </div>
+        
+        
+        <!-- search hotels -->
+        
+        
+        <div class="row" id="search-hotel">
+          
+        </div>
+        
+        
+        
+      </div>
+    </center>
+     
+     
+   </section>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script>
+      
+      
+      // getting values using dom
+let select = document.getElementById('select')
+
+let values = document.getElementById('select').options
+
+hoteldiv = document.getElementById('allhotel')
+
+//getting all amenites
+
+function getAmenities() {
+  fetch('http://127.0.0.1:8000/api/amenities/')
+  
+  .then((res)=>{
+    return res.json()
+  })
+  
+  .then((data)=>{
+    for (i of data){
+      select.innerHTML += `
+      <option value="${i.id}"> ${i.name} </option>
+      `
+    }
+  }) 
+}
+
+
+getAmenities()
+
+
+// searching by price and amenites
+
+function btnSubmit() {
+
+  hoteldiv.outerHTML = ""
+  searchdiv = document.getElementById('search-hotel')
+  price = document.getElementById('price').value
+  let selected = []
+  for (i of values) {
+    if (i.selected) {
+      selected.push(i.value)
+    }
+  }
+  fetch(`http://127.0.0.1:8000/api/hotels/?price=${price}&amenites=${selected}`)
+  .then((res)=>{
+    return res.json()
+  })
+  .then((data)=>{
+    for (i of data) {
+      searchdiv.innerHTML +=  ` <div class="col-6 col-sm-6 col-md-4 col-lg-4"> 
+     
+     
+     <div class="my-2 card" style="width: 10rem;">
+  <img class="card-img-top" src="${i.image}" alt="Card image cap">
+  <div class="card-body">
+    <h5 class="card-title">${i.name}</h5>
+    <p class="card-text"> ${i.desc}</p>
+     <b class="card-text"> ৳${i.price}</b>
+  
+  </div>
+</div>
+     
+    
+    
+    
+    
+      </div>
+      `
+    }
+  })
+}
+
+
+//getting all hotels
+
+function allHotels() {
+  fetch('http://127.0.0.1:8000/api/hotels/')
+  .then((res)=>{
+    return res.json()
+  })
+  .then((data)=>{
+    for (i of data){
+      hoteldiv.innerHTML += `
+      <div class="col-6 col-sm-6 col-md-4 col-lg-4"> 
+     
+     
+     <div class="my-2 card" style="width: 10rem;">
+  <img class="card-img-top" src="${i.image}" alt="Card image cap">
+  <div class="card-body">
+    <h5 class="card-title">${i.name}</h5>
+    <p class="card-text"> ${i.desc}</p>
+     <b class="card-text"> ৳${i.price}</b>
+  
+  </div>
+</div>
+     
+    
+    
+    
+    
+      </div>
+      `
+    }
+  })
+}
+
+allHotels()
+      
+      
+      
+      
+    </script>
+  </body>
+</html>
